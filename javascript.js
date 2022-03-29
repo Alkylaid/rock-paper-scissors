@@ -40,8 +40,7 @@ function playRound(playerSelection, computerSelection) {
 function game() {
     
     for (let i = 0; i < 5; i++) {
-        const playerSelection = window.prompt("Rock, Paper, Scissors?");
-        playerSelection = playerSelection.charAt(0).toUpperCase() + playerSelection.slice(1).toLowerCase();
+        playerSelection = getPlayerSelection();
 
         
         const computerSelection = computerPlay();
@@ -56,6 +55,18 @@ function game() {
     }
 }
 
+function getPlayerSelection() {
+    while (true) {
+    let selection = window.prompt("Rock, Paper, Scissors?");
+    selection = selection.charAt(0).toUpperCase() + selection.slice(1).toLowerCase();
+
+    if (selection === "Rock" || selection === "Paper" || selection === "Scissors") {
+        validSelection = true;
+        return selection;
+    }
+    }
+    
+}
 
 let playerScore = 0;
 let computerScore = 0;
