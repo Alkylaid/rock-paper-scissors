@@ -1,15 +1,24 @@
+let playerScore = 0;
+let computerScore = 0;
+const buttons = document.querySelectorAll('button');
+const score = document.querySelector('.score');
+const results = document.querySelector('.results');
+const body = document.querySelector('body');
+updateScore();
+game();
+
 function computerPlay() {
     randomNumber = Math.floor(Math.random() * 3);
 
     switch (randomNumber) {
         case 0: 
-            return "Rock";
+            return "rock";
             break;
         case 1:
-            return "Paper";
+            return "paper";
             break;
         case 2:
-            return "Scissors";
+            return "scissors";
             break;
     }
 
@@ -19,57 +28,101 @@ function playRound(playerSelection, computerSelection) {
     
 
     if (playerSelection === computerSelection) {
-        return `Draw! Player: ${playerScore} Computer: ${computerScore}`;
-    } else if (playerSelection === "Rock" && computerSelection === "Scissors") {
+        updateRoundResults("draw");
+        updateScore();
+    } else if (playerSelection === "rock" && computerSelection === "scissors") {
         playerScore++;
-        return `You win! ${playerSelection} beats ${computerSelection}`
-    } else if (playerSelection === "Paper" && computerSelection === "Rock") {
+        updateRoundResults("win");
+        updateScore();
+    } else if (playerSelection === "paper" && computerSelection === "rock") {
         playerScore++;
-        return `You win! ${playerSelection} beats ${computerSelection}. Player: ${playerScore} Computer: ${computerScore}`
-    } else if (playerSelection === "Scissors" && computerSelection === "Paper") {
+        updateRoundResults("win");
+        updateScore();
+    } else if (playerSelection === "scissors" && computerSelection === "paper") {
         playerScore++;
-        return `You win! ${playerSelection} beats ${computerSelection}. Player: ${playerScore} Computer: ${computerScore}`
+        updateRoundResults("win");
+        updateScore();
     } else {
         computerScore++;
-        return `You lose! ${computerSelection} beats ${playerSelection}. Player: ${playerScore} Computer: ${computerScore}`
+        updateRoundResults("lose");
+        updateScore();
     }
     
 
 }
+
+
+
 
 function game() {
-    
-    for (let i = 0; i < 5; i++) {
-        playerSelection = getPlayerSelection();
+    buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+            playRound(button.getAttribute('class'), computerPlay());
 
-        
-        const computerSelection = computerPlay();
-        console.log(playRound(playerSelection, computerSelection));
-    }
-    if (playerScore === computerScore) {
-        return "Draw!";
-    } else if (playerScore > computerScore) {
-        return "Player wins!";
-    } else {
-        return "Computer Wins!";
+
+        })
+    })
+}
+
+function updateScore() {
+    score.textContent = `Player: ${playerScore} Computer: ${computerScore}`;
+    if (playerScore >= 5 || computerScore >= 5) {
+        gameOver();
+
     }
 }
 
-function getPlayerSelection() {
-    while (true) {
-    let selection = window.prompt("Rock, Paper, Scissors?");
-    selection = selection.charAt(0).toUpperCase() + selection.slice(1).toLowerCase();
+function updateRoundResults(result) {
+    switch (result){
+        case "draw":
+            results.textContent = 'Draw!';
+            break;
+        case "win":
+            results.textContent = `You win the round!`;
+            break;
+        case "lose":
+            results.textContent = 'You lost the round!';
+            break;
 
-    if (selection === "Rock" || selection === "Paper" || selection === "Scissors") {
-        validSelection = true;
-        return selection;
     }
-    }
-    
 }
 
-let playerScore = 0;
-let computerScore = 0;
+function gameOver() {
+    buttons.forEach((button) => {
+        button.disabled = true;
+    })
+    const gameOverMessage = document.createElement('div');
+    gameOverMessage.style.cssText = 'color: red; font-size: 36px; font-weight: bold; margin-top: 20px;'
+    gameOverMessage.classList.add('Game-Over');
+        if (playerScore > computerScore) {
+            gameOverMessage.textContent = "You win the game!";
+        } else {
+            gameOverMessage.textContent = "The computer wins the game!";
+        }
+        body.appendChild(gameOverMessage);
+        playAgain();
 
+}
 
-console.log(game());
+function playAgain() {
+    const playAgain = document.createElement('button');
+    playAgain.textContent = 'Play Again';
+    body.appendChild(playAgain);
+    playAgain.addEventListener('click', () => {
+    playerScore = 0;
+    computerScore = 0;
+    playAgain.remove();
+    clearMessages();
+    updateScore();
+    buttons.forEach((button) => {
+        button.disabled = false;
+    })
+    })
+}
+
+function clearMessages() {
+    const gameOverMessage = document.querySelector('.Game-Over');
+    gameOverMessage.remove();
+    results.textContent = '';
+}
+
